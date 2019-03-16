@@ -19,16 +19,18 @@ class Cell {
     int mx = tx;
     int my = ty;
     if (mx > x && mx < x+w && my > y && my < y+h) {
-
+      //player's turn
       if (player == 0 && state == 0) {
         state = 1;
         full -= 1;
-        player = 1;
+        player = 1; //set to computer's turn
       } 
+      //TODO make "ai" choose random available cell
+      //computer's turn
       else if (player == 1 && state == 0) {
         state = 2;
         full -= 1;
-        player = 0;
+        player = 0; // set to player's turn
       }
       else {
         error.trigger();
