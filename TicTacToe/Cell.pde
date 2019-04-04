@@ -33,7 +33,9 @@ class Cell {
         player = 0; // set to player's turn
       }
       else {
-        error.trigger();
+        if (full != 0){
+          error.trigger();
+        }
       }
     }
   }
@@ -57,17 +59,17 @@ class Cell {
   void display() {
     noFill();
     stroke(0);
-    strokeWeight(3);
+    strokeWeight(5);
     rect(x, y, w, h);
     if (state == 1) {
       ellipseMode(CORNER);
       stroke(0, 0, 0);
-      ellipse(x + 7, y + 7, w - 14, h - 14);
+      ellipse(x + 9, y + 9, w - 18, h - 18);
     } 
     else if ( state == 2) {
       stroke(0, 0, 0);
-      line(x, y, x+w, y+h); 
-      line(x+w, y, x, y+h);
+      line(x+9, y+9, (x+w)-9, (y+h)-9); 
+      line((x+w)-9, y+9, x+9, (y+h)-9);
     } 
   }
 }
