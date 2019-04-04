@@ -40,6 +40,7 @@ void draw() {
   if (game == 0) {
     fill(0);
     textSize(20);
+    textAlign(CENTER, CENTER);
     text("Press ENTER to Start", width / 2, height / 2);
   }
 
