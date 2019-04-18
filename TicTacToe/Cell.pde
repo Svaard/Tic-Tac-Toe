@@ -6,6 +6,7 @@ class Cell {
   int w;
   int h;
   int state = 0;
+  String highlight;
   AudioSample error = minim.loadSample("error.wav", 2048);
 
   Cell(int tx, int ty, int tw, int th) {
@@ -54,6 +55,19 @@ class Cell {
   
   int checkY(){
     return y;  
+  }
+  
+  void setHighlight(){
+    if(highlight.equalsIgnoreCase("Green")){
+       stroke(0, 77, 13); 
+    }
+    if(highlight.equalsIgnoreCase("Yellow")){
+      stroke(255, 215, 0);
+    }
+    if(highlight.equalsIgnoreCase("Red")){
+      stroke(139, 128, 0);
+    }
+    rect(x,y,w,h);
   }
 
   void display() {
