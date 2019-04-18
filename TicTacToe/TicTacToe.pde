@@ -249,58 +249,58 @@ void mousePressed() {
   }
 }
 
-void keyPressed() {
-  if (game == 0) {
-    if (key == ENTER) {
-      game =1; //let's play
-      full = 9;
-    }
-  } 
-  else if (game == 1 && win == 0 && full == 0 ) {
-    if (key == ENTER) {
-      game = 0; // start again
-      for (int i = 0; i<cols; i++) {
-        for (int j = 0; j<rows; j++) {
-          board[i][j].clean();
-          on_button0.setDisplayed(false);
-          on_button1.setDisplayed(false);
-          on_button2.setDisplayed(false); 
-          on_button3.setDisplayed(false);
-          on_button4.setDisplayed(false);
-          on_button5.setDisplayed(false);
-          on_button6.setDisplayed(false);
-          on_button7.setDisplayed(false);
-          on_button8.setDisplayed(false);
-          win = 0;
-          full = 9;
-          player = 0;
-        }
-      }
-    }
-  }
-  else if (game == 1 && (win == 1 || win ==2)) {
-    if (key == ENTER) {
-      game = 0; // start again
-      for (int i = 0; i<cols; i++) {
-        for (int j = 0; j<rows; j++) {
-          board[i][j].clean();
-          on_button0.setDisplayed(false);
-          on_button1.setDisplayed(false);
-          on_button2.setDisplayed(false); 
-          on_button3.setDisplayed(false);
-          on_button4.setDisplayed(false);
-          on_button5.setDisplayed(false);
-          on_button6.setDisplayed(false);
-          on_button7.setDisplayed(false);
-          on_button8.setDisplayed(false);
-          win = 0;
-          full = 9;
-          player = 0;
-        }
-      }
-    }
-  }
-}
+//void keyPressed() {
+//  if (game == 0) {
+//    if (key == ENTER) {
+//      game =1; //let's play
+//      full = 9;
+//    }
+//  } 
+//  else if (game == 1 && win == 0 && full == 0 ) {
+//    if (key == ENTER) {
+//      game = 0; // start again
+//      for (int i = 0; i<cols; i++) {
+//        for (int j = 0; j<rows; j++) {
+//          board[i][j].clean();
+//          on_button0.setDisplayed(false);
+//          on_button1.setDisplayed(false);
+//          on_button2.setDisplayed(false); 
+//          on_button3.setDisplayed(false);
+//          on_button4.setDisplayed(false);
+//          on_button5.setDisplayed(false);
+//          on_button6.setDisplayed(false);
+//          on_button7.setDisplayed(false);
+//          on_button8.setDisplayed(false);
+//          win = 0;
+//          full = 9;
+//          player = 0;
+//        }
+//      }
+//    }
+//  }
+//  else if (game == 1 && (win == 1 || win ==2)) {
+//    if (key == ENTER) {
+//      game = 0; // start again
+//      for (int i = 0; i<cols; i++) {
+//        for (int j = 0; j<rows; j++) {
+//          board[i][j].clean();
+//          on_button0.setDisplayed(false);
+//          on_button1.setDisplayed(false);
+//          on_button2.setDisplayed(false); 
+//          on_button3.setDisplayed(false);
+//          on_button4.setDisplayed(false);
+//          on_button5.setDisplayed(false);
+//          on_button6.setDisplayed(false);
+//          on_button7.setDisplayed(false);
+//          on_button8.setDisplayed(false);
+//          win = 0;
+//          full = 9;
+//          player = 0;
+//        }
+//      }
+//    }
+//  }
+//}
 
 void checkGame() {
   int row = 0;
