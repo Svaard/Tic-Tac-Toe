@@ -210,6 +210,7 @@ void mousePressed() {
     game = 2; // take you to options screen
     on_button0.setDisplayed(false);
     on_button3.setDisplayed(false);
+    on_button4.setDisplayed(false);
   }
   
    //rules button
