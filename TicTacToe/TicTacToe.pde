@@ -63,7 +63,8 @@ void draw() {
     fill(0);
     textSize(20);
     textAlign(CENTER, CENTER);
-    text("MAIN MENU", width / 2, height / 8);
+    text("TIC TAC TOE", width / 2, height / 14);
+    text("Main Menu", width / 2, height / 7);
     on_button0.setDisplayed(true);
     on_button3.setDisplayed(true);
     on_button4.setDisplayed(true);
@@ -89,13 +90,14 @@ void draw() {
   if(game == 3){
     fill(0);
     textSize(18);
-    text("RULES", width/2, height/8);
+    text("Game Rules", width/2, height/8);
     textSize(15);
     text("The rules are as follows:", width/4, height / 2);
     textSize(13);
-    text("Green cell highlight represents", width/3, (height / 2) + 20);
-    text("Yellow cell highlight represents", width/3, (height / 2) + 40);
-    text("Red cell highlight represents", width/3, (height / 2) + 60);
+    textAlign(LEFT);
+    text("Green cell highlight represents", width/7, (height / 2) + 35);
+    text("Yellow cell highlight represents", width/7, (height / 2) + 55);
+    text("Red cell highlight represents", width/7, (height / 2) + 75);
     on_button5.setDisplayed(true);
     on_button5.display();
   }
@@ -121,20 +123,18 @@ void draw() {
   
     // player win
   if (win == 1) {
-    fill(255, 140, 0);
+    fill(0);
     textSize(20);
     textAlign(CENTER, CENTER);
-    //text(" You won! \nPress Enter \nto play again.", width/2-width/2+23, height/2-height/6-20);
     text("You won!\nPlay again?", width / 2, height / 2);
   }
   
   // ai win
   if (win == 2) {
-    fill(255, 140, 0);
+    fill(0);
     textSize(20);
     textAlign(CENTER, CENTER);
-    //text(" You Lost! \nPress Enter \nto play again.", width/2-width/2+23, height/2-height/6-20);
-    text("You Lost!\nPlay again?", width / 2, height / 2);
+    text("You lost, maybe you need glasses!\nPlay again?", width / 2, height / 2);
   }
   
   // tie game
