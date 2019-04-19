@@ -8,6 +8,9 @@ class Cell {
   int state = 0;
   String highlight;
   AudioSample error = minim.loadSample("error.wav", 2048);
+  int playerState;
+  int aiState;
+  boolean aiTurn;
 
   Cell(int tx, int ty, int tw, int th) {
     x = tx;
@@ -20,16 +23,27 @@ class Cell {
     int mx = tx;
     int my = ty;
     if (mx > x && mx < x+w && my > y && my < y+h) {
+      playerState = TicTacToe.getPlayerState();
+      aiState = TicTacToe.getAIState();
+      //if(aiState == 2){
+      //  aiTurn = true;
+      //}
+      //if(aiTurn){
+      //  aiTurn = false;
+      //  state = aiState;
+      //  full -= 1;
+      //  player = 0;
+      //}
       //player's turn
       if (player == 0 && state == 0) {
-        state = 1;
+        state = playerState;
         full -= 1;
         player = 1; //set to computer's turn
       } 
       //TODO make "ai" choose random available cell
       //computer's turn
       else if (player == 1 && state == 0) {
-        state = 2;
+        state = aiState;
         full -= 1;
         player = 0; // set to player's turn
       }
@@ -39,6 +53,11 @@ class Cell {
         }
       }
     }
+  }
+  
+  void setState(int new_state) {
+    state = new_state;
+    full--;
   }
   
   void clean(){
