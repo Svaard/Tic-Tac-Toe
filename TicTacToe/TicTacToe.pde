@@ -1,4 +1,5 @@
 import ddf.minim.*;
+import java.util.Random;
 Minim minim;
 AudioSample click;
 AudioSample error;
@@ -23,10 +24,12 @@ static final int AIGONNAWHUPYA = 2; // hard AI
 int win = 0;  // 1 = player1   2 = player2;
 int game = 0;  // 1 = game started
 int full = 9;
-static final int MARKER_O = 0;
-static final int MARKER_X = 1;
+static final int MARKER_O = 1;
+static final int MARKER_X = 2;
 boolean showOptions; //for options menu
 boolean showRules; // for rules menu
+static int playerState;
+static int aiState;
 
 void settings() {
   size(400, 400);
@@ -164,7 +167,19 @@ void mousePressed() {
   //if you click this button it starts the game
   if (on_button0.isInside()) {
     on_button0.press();
-    game = 1; // start again
+    Random r = new Random(); // RANDOMLY ASSIGN MARKERS
+    int rNum = r.nextInt((1-0)+1)+0;
+    System.out.println(rNum);
+    if(rNum == 0){
+       playerState = MARKER_O;
+       aiState = MARKER_X;
+       
+    }
+    else{
+       playerState = MARKER_X;
+       aiState = MARKER_O;
+    }
+    game = 1; // start game and hide buttons
     for (int i = 0; i<cols; i++) {
       for (int j = 0; j<rows; j++) {
         board[i][j].clean();
@@ -180,6 +195,9 @@ void mousePressed() {
         win = 0;
         full = 9;
         player = 0;
+        //if(playerState == MARKER_O){
+        //  ai.makeMove();
+        //}
       }
     } 
   }
@@ -197,7 +215,12 @@ void mousePressed() {
         full = 9;
         player = 0;
       }
-    } 
+    }
+    if(aiState == MARKER_X) {
+      int x = new Random().nextInt(3);
+      int y = new Random().nextInt(3);
+      board[x][y].setState(MARKER_X);
+    }
   }
   // if you press quit button quits game
   if (on_button2.isInside()) {
@@ -249,89 +272,68 @@ void mousePressed() {
   }
 }
 
-//void keyPressed() {
-//  if (game == 0) {
-//    if (key == ENTER) {
-//      game =1; //let's play
-//      full = 9;
-//    }
-//  } 
-//  else if (game == 1 && win == 0 && full == 0 ) {
-//    if (key == ENTER) {
-//      game = 0; // start again
-//      for (int i = 0; i<cols; i++) {
-//        for (int j = 0; j<rows; j++) {
-//          board[i][j].clean();
-//          on_button0.setDisplayed(false);
-//          on_button1.setDisplayed(false);
-//          on_button2.setDisplayed(false); 
-//          on_button3.setDisplayed(false);
-//          on_button4.setDisplayed(false);
-//          on_button5.setDisplayed(false);
-//          on_button6.setDisplayed(false);
-//          on_button7.setDisplayed(false);
-//          on_button8.setDisplayed(false);
-//          win = 0;
-//          full = 9;
-//          player = 0;
-//        }
-//      }
-//    }
-//  }
-//  else if (game == 1 && (win == 1 || win ==2)) {
-//    if (key == ENTER) {
-//      game = 0; // start again
-//      for (int i = 0; i<cols; i++) {
-//        for (int j = 0; j<rows; j++) {
-//          board[i][j].clean();
-//          on_button0.setDisplayed(false);
-//          on_button1.setDisplayed(false);
-//          on_button2.setDisplayed(false); 
-//          on_button3.setDisplayed(false);
-//          on_button4.setDisplayed(false);
-//          on_button5.setDisplayed(false);
-//          on_button6.setDisplayed(false);
-//          on_button7.setDisplayed(false);
-//          on_button8.setDisplayed(false);
-//          win = 0;
-//          full = 9;
-//          player = 0;
-//        }
-//      }
-//    }
-//  }
-//}
-
 void checkGame() {
   int row = 0;
-  //check horizontal and vertical cells
-  for (int col = 0; col< cols; col++) {
-    if (board[col][row].checkState() == 1 && board[col][row+1].checkState() == 1 && board[col][row+2].checkState() == 1) {
-      win = 1;
-    } 
-    else if (board[row][col].checkState() == 1 && board[row+1][col].checkState() == 1 && board[row+2][col].checkState() == 1) {
-      win = 1;
-    } 
-    else if (board[row][col].checkState() == 2 && board[row+1][col].checkState() == 2 && board[row+2][col].checkState() == 2) {
-      win = 2;
+    //check horizontal and vertical cells
+    for (int col = 0; col< cols; col++) {
+      if (board[col][row].checkState() == 1 && board[col][row+1].checkState() == 1 && board[col][row+2].checkState() == 1) {
+        if(playerState == MARKER_O)
+          win = 1;
+        else
+          win = 2;
+      } 
+      else if (board[row][col].checkState() == 1 && board[row+1][col].checkState() == 1 && board[row+2][col].checkState() == 1) {
+        if(playerState == MARKER_O)
+          win = 1;
+        else
+          win = 2;
+      } 
+      else if (board[row][col].checkState() == 2 && board[row+1][col].checkState() == 2 && board[row+2][col].checkState() == 2) {
+        if(playerState == MARKER_O)
+          win = 2;
+        else
+          win = 1;
+      }
+      else if (board[col][row].checkState() == 2 && board[col][row+1].checkState() == 2 && board[col][row+2].checkState() == 2) {
+        if(playerState == MARKER_O)
+          win = 2;
+        else
+          win = 1;
+      }
     }
-    else if (board[col][row].checkState() == 2 && board[col][row+1].checkState() == 2 && board[col][row+2].checkState() == 2) {
-      win = 2;
+  
+    //check diagonal cells
+    if (board[row][row].checkState() == 1 && board[row+1][row+1].checkState() == 1 && board[row+2][row+2].checkState() == 1) {
+      if(playerState == MARKER_O)
+        win = 1;
+      else
+        win = 2;
+    } 
+    else if (board[row][row].checkState() == 2 && board[row+1][row+1].checkState() == 2 && board[row+2][row+2].checkState() == 2) {
+      if(playerState == MARKER_O)
+        win = 2;
+      else
+        win = 1;
+    } 
+    else if (board[0][row+2].checkState() == 1 && board[1][row+1].checkState() == 1 && board[2][row].checkState() == 1) {
+      if(playerState == MARKER_O)
+        win = 1;
+      else
+        win = 2;
+    } 
+    else if (board[0][row+2].checkState() == 2 && board[1][row+1].checkState() == 2 && board[2][row].checkState() == 2) {
+      if(playerState == MARKER_O)
+        win = 2;
+      else
+        win = 1;
     }
-  }
 
-  //check diagonal cells
-  if (board[row][row].checkState() == 1 && board[row+1][row+1].checkState() == 1 && board[row+2][row+2].checkState() == 1) {
-    win = 1;
-  } 
-  else if (board[row][row].checkState() == 2 && board[row+1][row+1].checkState() == 2 && board[row+2][row+2].checkState() == 2) {
-    win = 2;
-  } 
-  else if (board[0][row+2].checkState() == 1 && board[1][row+1].checkState() == 1 && board[2][row].checkState() == 1) {
-    win = 1;
-  } 
-  else if (board[0][row+2].checkState() == 2 && board[1][row+1].checkState() == 2 && board[2][row].checkState() == 2) {
-    win = 2;
-  }
+}
 
+static int getPlayerState(){
+  return playerState;
+}
+
+static int getAIState(){
+  return aiState; 
 }
