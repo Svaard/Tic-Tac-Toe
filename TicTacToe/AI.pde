@@ -16,6 +16,9 @@ class AI {
           Cell toBeChecked = cells[cellX][cellY];
             if(toBeChecked.checkState() == 0){
               toBeChecked.click(toBeChecked.checkX() + 1, toBeChecked.checkY() + 1);
+              System.out.println(toBeChecked.checkX());
+              System.out.println(toBeChecked.checkY());
+              System.out.println();
           }
         }
       }
