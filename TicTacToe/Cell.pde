@@ -6,11 +6,7 @@ class Cell {
   int w;
   int h;
   int state = 0;
-  String highlight;
   AudioSample error = minim.loadSample("error.wav", 2048);
-  int playerState;
-  int aiState;
-  boolean aiTurn;
 
   Cell(int tx, int ty, int tw, int th) {
     x = tx;
@@ -23,27 +19,16 @@ class Cell {
     int mx = tx;
     int my = ty;
     if (mx > x && mx < x+w && my > y && my < y+h) {
-      playerState = TicTacToe.getPlayerState();
-      aiState = TicTacToe.getAIState();
-      //if(aiState == 2){
-      //  aiTurn = true;
-      //}
-      //if(aiTurn){
-      //  aiTurn = false;
-      //  state = aiState;
-      //  full -= 1;
-      //  player = 0;
-      //}
       //player's turn
       if (player == 0 && state == 0) {
-        state = playerState;
+        state = TicTacToe.playerMarker;
         full -= 1;
         player = 1; //set to computer's turn
       } 
       //TODO make "ai" choose random available cell
       //computer's turn
       else if (player == 1 && state == 0) {
-        state = aiState;
+        state = TicTacToe.aiMarker;
         full -= 1;
         player = 0; // set to player's turn
       }
@@ -55,9 +40,11 @@ class Cell {
     }
   }
   
-  void setState(int new_state) {
-    state = new_state;
-    full--;
+  boolean isInside() {
+    if (mouseX > x && mouseX < (x + w) && mouseY > y && mouseY < (y + h)) {
+      return true;
+    }
+    return false;
   }
   
   void clean(){
@@ -76,17 +63,10 @@ class Cell {
     return y;  
   }
   
-  void setHighlight(){
-    if(highlight.equalsIgnoreCase("Green")){
-       stroke(0, 77, 13); 
-    }
-    if(highlight.equalsIgnoreCase("Yellow")){
-      stroke(255, 215, 0);
-    }
-    if(highlight.equalsIgnoreCase("Red")){
-      stroke(139, 128, 0);
-    }
-    rect(x,y,w,h);
+  void setHighlight(color col){
+    stroke(col);
+    strokeWeight(3);
+    rect(x + 5, y + 5, w - 10, h - 10);
   }
 
   void display() {
