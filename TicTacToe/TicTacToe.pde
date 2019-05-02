@@ -399,5 +399,9 @@ void checkGame() {
       win = 1;
     }
   }
-
+  
+  void keyPressed(){
+    //if(key== ){
+    //}
+  }
 }
