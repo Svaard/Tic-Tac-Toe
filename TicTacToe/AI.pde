@@ -1,5 +1,5 @@
 class AI {
-  int difficulty;
+  int difficulty = TicTacToe.AINOBRAINS;
   Cell[][] cells;
   int marker;
   
@@ -12,6 +12,7 @@ class AI {
   void makeMove(){
       if(player == 1 && full > 0){
           if(difficulty == 0){
+            //AINOBRAINS
             while(player == 1){
               int cellX = int(random(cells[0].length));
               int cellY = int(random(cells.length));
@@ -21,16 +22,47 @@ class AI {
               }
             }
           } else if(difficulty == 1){
-            //TODO: MEDIUM
+            //DEFENSIVEONLY
+            int playerMarker = TicTacToe.playerMarker;
+            //1.) Check if AI needs to block
+            if(player == 1){
+              ArrayList<Cell> playerWins = checkWinCondition(playerMarker);
+              if(playerWins.size() > 0){
+                Cell firstBlock = playerWins.get(0);
+                firstBlock.click(firstBlock.checkX() + 1, firstBlock.checkY() + 1);
+                println("AI blocked win");
+                return;
+              }
+            }
+            //2.) Check if AI needs to block a fork
+            if(player == 1){
+              ArrayList<Cell> playerForkLocations = checkFork(playerMarker);
+              if(playerForkLocations.size() >= 1){
+                Cell blocker = playerForkLocations.get(0);
+                blocker.click(blocker.checkX() + 1, blocker.checkY() + 1);
+                println("AI blocked 1 fork");
+                return;
+              }
+            }
+            //3.) Make a random move
+            while(player == 1){
+              int cellX = int(random(cells[0].length));
+              int cellY = int(random(cells.length));
+              Cell toBeChecked = cells[cellX][cellY];
+              if(toBeChecked.checkState() == 0){
+                toBeChecked.click(toBeChecked.checkX() + 1, toBeChecked.checkY() + 1);
+                return;
+              }
+            }
           } else if(difficulty == 2){
-            int playerMarker = (marker == 1 ? 2 : 1);
-            
+            //AIGONNAWHUPYA
+            int playerMarker = TicTacToe.playerMarker;
             //1.) Check if AI can win
             ArrayList<Cell> aiWins = checkWinCondition(marker);
             if(aiWins.size() > 0){
               Cell firstWin = aiWins.get(0);
               firstWin.click(firstWin.checkX() + 1, firstWin.checkY() + 1);
-              print("AI found win");
+              println("AI found win");
               return;
             }
             //2.) Check if AI needs to block
@@ -39,17 +71,17 @@ class AI {
               if(playerWins.size() > 0){
                 Cell firstBlock = playerWins.get(0);
                 firstBlock.click(firstBlock.checkX() + 1, firstBlock.checkY() + 1);
-                print("AI blocked win");
+                println("AI blocked win");
                 return;
               }
             }
             //3.) Check if AI can fork
             if(player == 1){
               ArrayList<Cell> aiForkLocations = checkFork(marker);
-              if(aiForkLocations.size() != 0){
+              if(aiForkLocations.size() > 0){
                 Cell forker = aiForkLocations.get(0);
                 forker.click(forker.checkX() + 1, forker.checkY() + 1);
-                print("AI found fork");
+                println("AI found fork");
                 return;
               }
             }
@@ -59,9 +91,9 @@ class AI {
               if(playerForkLocations.size() == 1){
                 Cell blocker = playerForkLocations.get(0);
                 blocker.click(blocker.checkX() + 1, blocker.checkY() + 1);
-                print("AI blocked 1 fork");
+                println("AI blocked 1 fork");
               } else if(playerForkLocations.size() > 1){
-                print("AI found multiple forks, chose cell that gave 2 in a row & doesn't let player fork");
+                println("AI found multiple forks, chose cell that gave 2 in a row & doesn't let player fork");
                 for(int y = 0; y < cells.length; y++){
                   for(int x = 0; x < cells[y].length; x++){
                     Cell possibleOut = cells[y][x];
@@ -95,7 +127,7 @@ class AI {
             if(player == 1){
               if(cells[1][1].checkState() == 0){
                 cells[1][1].click(cells[1][1].checkX() + 1, cells[1][1].checkY() + 1);
-                print("AI picked center");
+                println("AI picked center");
                 return;
               }
             }
@@ -103,19 +135,19 @@ class AI {
             if(player == 1){
               if(cells[0][0].checkState() == playerMarker && cells[2][2].checkState() == 0){
                 cells[2][2].click(cells[2][2].checkX() + 1, cells[2][2].checkY() + 1);
-                print("AI picked opposite corner");
+                println("AI picked opposite corner");
                 return;
               } else if(cells[0][2].checkState() == playerMarker && cells[2][0].checkState() == 0){
                 cells[2][0].click(cells[2][0].checkX() + 1, cells[2][0].checkY() + 1);
-                print("AI picked opposite corner");
+                println("AI picked opposite corner");
                 return;
               } else if(cells[2][0].checkState() == playerMarker && cells[0][2].checkState() == 0){
                 cells[0][2].click(cells[0][2].checkX() + 1, cells[0][2].checkY() + 1);
-                print("AI picked opposite corner");
+                println("AI picked opposite corner");
                 return;
               } else if(cells[2][2].checkState() == playerMarker && cells[0][0].checkState() == 0){
                 cells[0][0].click(cells[0][0].checkX() + 1, cells[0][0].checkY() + 1);
-                print("AI picked opposite corner");
+                println("AI picked opposite corner");
                 return;
               }
             }
@@ -123,19 +155,19 @@ class AI {
             if(player == 1){
               if(cells[0][0].checkState() == 0){
                 cells[0][0].click(cells[0][0].checkX() + 1, cells[0][0].checkY() + 1);
-                print("AI picked empty corner");
+                println("AI picked empty corner");
                 return;
               } else if(cells[0][2].checkState() == 0){
                 cells[0][2].click(cells[0][2].checkX() + 1, cells[0][2].checkY() + 1);
-                print("AI picked empty corner");
+                println("AI picked empty corner");
                 return;
               } else if(cells[2][0].checkState() == 0){
                 cells[2][0].click(cells[2][0].checkX() + 1, cells[2][0].checkY() + 1);
-                print("AI picked empty corner");
+                println("AI picked empty corner");
                 return;
               } else if(cells[2][2].checkState() == 0){
                 cells[2][2].click(cells[2][2].checkX() + 1, cells[2][2].checkY() + 1);
-                print("AI picked empty corner");
+                println("AI picked empty corner");
                 return;
               }
             }
@@ -143,19 +175,19 @@ class AI {
             if(player == 1){
               if(cells[0][1].checkState() == 0){
                 cells[0][1].click(cells[0][1].checkX() + 1, cells[0][1].checkY() + 1);
-                print("AI picked empty side");
+                println("AI picked empty side");
                 return;
               } else if(cells[1][0].checkState() == 0){
                 cells[1][0].click(cells[1][0].checkX() + 1, cells[1][0].checkY() + 1);
-                print("AI picked empty side");
+                println("AI picked empty side");
                 return;
               } else if(cells[1][2].checkState() == 0){
                 cells[1][2].click(cells[1][2].checkX() + 1, cells[1][2].checkY() + 1);
-                print("AI picked empty side");
+                println("AI picked empty side");
                 return;
               } else if(cells[2][1].checkState() == 0){
                 cells[2][1].click(cells[2][1].checkX() + 1, cells[2][1].checkY() + 1);
-                print("AI picked empty side");
+                println("AI picked empty side");
                 return;
               }
             }
