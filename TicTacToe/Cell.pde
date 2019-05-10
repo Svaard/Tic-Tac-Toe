@@ -24,13 +24,14 @@ class Cell {
         state = TicTacToe.playerMarker;
         full -= 1;
         player = 1; //set to computer's turn
+        TicTacToe.moveStack.addFirst(this);
       } 
-      //TODO make "ai" choose random available cell
       //computer's turn
       else if (player == 1 && state == 0) {
         state = TicTacToe.aiMarker;
         full -= 1;
         player = 0; // set to player's turn
+        TicTacToe.moveStack.addFirst(this);
       }
       else {
         if (full != 0){
@@ -48,7 +49,7 @@ class Cell {
   }
   
   void clean(){
-    state = 0;  
+    state = 0;
   }
   
   int checkState(){
@@ -67,6 +68,7 @@ class Cell {
     stroke(col);
     strokeWeight(3);
     rect(x + 5, y + 5, w - 10, h - 10);
+    stroke(255, 255, 255);
   }
 
   void display() {
