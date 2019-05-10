@@ -1,5 +1,7 @@
 import ddf.minim.*;
 import java.util.Random;
+import java.util.ArrayDeque;
+
 Minim minim;
 AudioSample click;
 AudioSample error;
@@ -14,10 +16,15 @@ Button on_button7;
 Button on_button8;
 
 Cell[][] board;
-AI ai;
+AI ai = new AI(board, AINOBRAINS, aiMarker);
+int wins = 0;
+int losses = 0;
+int ties = 0;
 int cols = 3;
 int rows = 3;
 int player = 0; //0 = player1
+boolean gameCounted = false;
+static ArrayDeque<Cell> moveStack = new ArrayDeque<Cell>();
 static final int AINOBRAINS = 0; // easy aAi
 static final int AIDEFENSIVE_ONLY = 1; // AI plays defensively
 static final int AIGONNAWHUPYA = 2; // hard AI
@@ -35,9 +42,9 @@ boolean pause1;
 color orange = color(255, 165, 0); //shows blocker cells
 color green = color(0, 255, 0); //shows winning cells
 color red = color(255, 0, 0); //hovering over filled cell
-color purple = color(148, 0, 211); //shows player forks
+color purple = color(148, 0, 211); //shows ai forks
 color grey = color(200, 200, 200); //default hover
-color redOrange = color(255, 69, 0); //shows AI forks
+color blue = color(0, 140, 255); //shows player forks
 
 void settings() {
   size(400, 400);
@@ -65,7 +72,7 @@ void setup() {
       board[i][j] = new Cell(width/3*i, height/3*j, width/3, height/3);
     }
   }
-  ai = new AI(board, AINOBRAINS, aiMarker);
+  //ai = new AI(board, AINOBRAINS, aiMarker);
 }
 
 void draw() {
@@ -112,11 +119,17 @@ void draw() {
     text("The rules are as follows:", width/4, height / 2);
     textSize(9);
     textAlign(LEFT);
-    text("Green highlight represents a winning square.", width/16, (height / 2) + 35);
-    text("Orange highlight represents a square that needs to be blocked.", width/16, (height / 2) + 55);
+    fill(green);
+    text("Green highlight represents a square that wins you the game.", width/16, (height / 2) + 35);
+    fill(orange);
+    text("Orange highlight represents a square that blocks the opponent from winning.", width/16, (height / 2) + 55);
+    fill(red);
     text("Red highlight represents a square that you cannot click.", width/16, (height / 2) + 75);
-    text("Purple highlight represents a square that would create a fork for you.", width/16, (height / 2) + 95);
-    text("Red-orange highlight represents a square that the opponent could create a fork in.", width/16, (height / 2) + 115);
+    fill(blue);
+    text("Blue highlight represents a square that would create a fork for you.", width/16, (height / 2) + 95);
+    fill(purple);
+    text("Purple highlight represents a square that prevents the opponent from forking you.", width/16, (height / 2) + 115);
+    fill(grey);
     text("Grey highlight represents the square you are hovering over.", width/16, (height / 2) + 135);
     textSize(18);
     on_button5.setDisplayed(true);
@@ -156,15 +169,45 @@ void draw() {
               ArrayList<Cell> forks = ai.checkFork(playerMarker);
               if(forks.size() > 0){
                 for(Cell fork : forks){
-                  fork.setHighlight(purple);
+                  fork.setHighlight(blue);
                 }
               } else {
                 //check 4: show AI forks
                 ArrayList<Cell> aiForks = ai.checkFork(aiMarker);
-                if(aiForks.size() > 0){
-                  for(Cell aiFork: aiForks){
-                    aiFork.setHighlight(redOrange);
+                if(aiForks.size() == 1){
+                  aiForks.get(0).setHighlight(purple);
+                } else if(aiForks.size() > 1){
+                  
+                  for(int y1 = 0; y1 < board.length; y1++){
+                    for(int x1 = 0; x1 < board[y1].length; x1++){
+                      Cell possibleOut = board[y1][x1];
+                      if(possibleOut.checkState() == 0){
+                        possibleOut.state = playerMarker;
+                        ArrayList<Cell> oneStepAhead = ai.checkWinCondition(playerMarker);
+                        //check if this particular cell gives 2 in a row
+                        if(oneStepAhead.size() == 1){
+                          for(Cell oSA : oneStepAhead){
+                            boolean winnable = true;
+                            for(Cell fork : aiForks){
+                              if(fork.checkX() == oSA.checkX() && fork.checkY() == oSA.checkY()){
+                                winnable = false;
+                                break;
+                              }
+                            }
+                            if(winnable){
+                              possibleOut.state = 0;
+                              possibleOut.setHighlight(purple);
+                            }
+                          }
+                        }
+                        possibleOut.state = 0;
+                      }
+                    }
                   }
+                  
+                  
+                  
+                  
                 }
               }
             }
@@ -175,8 +218,9 @@ void draw() {
     pause = false;
   }
   
-  if (win == 1 || win == 2 || (win == 0 && full == 0)){
+  if (win == 1 || win == 2 || (win == 0 && full == 0) || win == 3){
     background(255);
+    game = 4;
     on_button1.setDisplayed(true);
     on_button2.setDisplayed(true);
     on_button1.display();
@@ -185,28 +229,29 @@ void draw() {
   
   // player win
   if (win == 1) {
-    fill(255, 140, 0);
-    textSize(20);
+    fill(green);
+    textSize(50);
     textAlign(CENTER, CENTER);
-    //text(" You won! \nPress Enter \nto play again.", width/2-width/2+23, height/2-height/6-20);
-    text("You won!\nPlay again?", width / 2, height / 2);
+    text("You won!", width / 2, height / 8);
+    displayStats();
   }
   
   // ai win
   if (win == 2) {
-    fill(255, 140, 0);
-    textSize(20);
+    fill(red);
+    textSize(50);
     textAlign(CENTER, CENTER);
-    //text(" You Lost! \nPress Enter \nto play again.", width/2-width/2+23, height/2-height/6-20);
-    text("You Lost!\nPlay again?", width / 2, height / 2);
+    text("You Lost!", width / 2, height / 8);
+    displayStats();
   }
   
   // tie game
-  if ( win == 0 && full == 0) {
-    fill(255, 140, 0);
-    textSize(20);
+  if (win == 3) {
+    fill(orange);
+    textSize(50);
     textAlign(CENTER, CENTER);
-    text("You Tied!\nPlay again?", width / 2, height / 2);
+    text("You Tied!", width / 2, height / 8);
+    displayStats();
   }
 }
 
@@ -236,16 +281,21 @@ void mousePressed() {
   //if you click this button it starts the game
   if (on_button0.isInside()) {
     on_button0.press();
+    gameCounted = false;
+    moveStack.clear();
     Random r = new Random(); // RANDOMLY ASSIGN MARKERS
     int rNum = r.nextInt((1-0)+1)+0;
-    System.out.println(rNum);
     if(rNum == 0){
        playerMarker = MARKER_O;
+       int diff = ai.difficulty;
        aiMarker = MARKER_X;
+       ai = new AI(board, diff, aiMarker);
     }
     else{
        playerMarker = MARKER_X;
+       int diff = ai.difficulty;
        aiMarker = MARKER_O;
+       ai = new AI(board, diff, aiMarker);
     }
     game = 1; // start game and hide buttons
     for (int i = 0; i<cols; i++) {
@@ -262,12 +312,14 @@ void mousePressed() {
         on_button8.setDisplayed(false);
         win = 0;
         full = 9;
-        player = 0;
-        //if(playerState == MARKER_O){
-        //  ai.makeMove();
-        //}
       }
     } 
+    if(playerMarker == MARKER_X){
+      player = 0;
+    } else {
+      player = 1;
+      ai.makeMove();
+    }
   }
   
   // if you click play button takes you back to main menu
@@ -336,6 +388,23 @@ void mousePressed() {
   }
 }
 
+//ctrl+z undos the last 2 moves made
+//can only be done on player turn
+//cannot undo ai move if ai goes first
+void keyPressed(){
+  if(key == 26){
+    if(full < 8 && player == 0){
+      Cell clear1 = moveStack.pop();
+      Cell clear2 = moveStack.pop();
+      clear1.clean();
+      clear2.clean();
+      full += 2;
+    } else {
+      error.trigger();
+    }
+  }
+}
+
 void checkGame() {
   int row = 0;
   //check horizontal and vertical cells
@@ -399,9 +468,39 @@ void checkGame() {
       win = 1;
     }
   }
-  
-  void keyPressed(){
-    //if(key== ){
-    //}
+  if(win == 1 && !gameCounted){
+    wins++;
+    gameCounted = true;
+  } else if(win == 2 && !gameCounted){
+    losses++;
+    gameCounted = true;
+  } else if(win == 0 && full == 0){
+    win = 3;
+    if(!gameCounted){
+      ties++;
+      gameCounted = true;
+    }
   }
+}
+
+void displayStats(){
+  textSize(20);
+  fill(green);
+  text("Total wins: " + wins, width / 2, height / 2);
+  fill(red);
+  text("Total losses: " + losses, width / 2, height / 2 + 35);
+  fill(orange);
+  text("Total ties: " + ties, width / 2, height / 2 + 70);
+  fill(green);
+  int winrate = round((float)wins / ((float)wins + (float)losses + (float)ties) * 100.0);
+  if(winrate >= 66){
+    fill(green);
+  } else if(winrate <= 33){
+    fill(red);
+  } else {
+    fill(orange);
+  }
+  text("Winrate: " + winrate + "%", width / 2, height / 2 + 105);
+  fill(0);
+  text("Turns taken: " + ceil((float)moveStack.size() / 2.0), width / 2, height / 2 + 140);
 }
